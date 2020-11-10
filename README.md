@@ -1,2 +1,2 @@
-# DeepDDI
-Final version of DeepDDI
+# DeepDrug
+Final version of DeepDrug
