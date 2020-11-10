@@ -1,2 +1,2 @@
-# deepdrug
-DeepDrug: A general graph-based deep learning framework for drug relation prediction
+# DeepDDI
+Final version of DeepDDI
