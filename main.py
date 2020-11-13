@@ -7,12 +7,11 @@
 ## python main.py -type multiDemo -database 2013 -sample 1_1 -israndom 1 -max_atoms 100
 
 ## train:
-## python main.py -type train -sample 1_1 -max_atoms 40 -israndom 1 -database 2013 -location test -unit_list 128 128 128 128 128 128 128 128 -use_bn 1 -use_relu 1 -use_GMP 1 -gpu_id 1
+## python main.py -type train -sample 1_1 -max_atoms 50 -israndom 1 -database drugbank -location test -unit_list 128 128 128 128 128 128 128 128 -use_bn 1 -use_relu 1 -use_GMP 1 -gpu_id 1
 import argparse
 from run_deep_ddi import run
 from train_deep_ddi import train
 from demo import demo, multiDemo
-from independent_prediction import independent_predict
 # This for run
 # python main.py -type run -max_atom 40 -sample 1_1 -gpu_id 1 -israndom 1 -database 2013
 parser = argparse.ArgumentParser(description='Drug_Drug_Interaction main function')
@@ -30,14 +29,6 @@ parser.add_argument('-use_bn', dest='use_bn', type=bool, help='use batchnormaliz
 parser.add_argument('-use_relu', dest='use_relu', type=bool, help='use relu for GCN')
 parser.add_argument('-use_GMP', dest='use_GMP', type=bool, help='use GlobalMaxPooling for GCN')
 
-
-# This is for independent prediction
-parser.add_argument('-train_database1', dest='train_database1', type=str, help="use which database, stanford, decagon, twosides, 2013")
-parser.add_argument('-train_database2', dest='train_database2', type=str, help="use which database, stanford, decagon, twosides, 2013")
-parser.add_argument('-train_database3', dest='train_database3', type=str, help="use which database, stanford, decagon, twosides, 2013")
-parser.add_argument('-test_database', dest='test_database', type=str, help="use which database, stanford, decagon, twosides, 2013")
-
-
 args = parser.parse_args()
 
 
@@ -52,13 +43,6 @@ def main():
         demo(args.max_atoms, args.israndom)
     elif args.type == 'multiDemo':
         multiDemo(args.database, args.sample, args.max_atoms, args.israndom)
-    
-    elif args.type == 'independent':
-        print("inside hererer*********************")
-        independent_predict(args.location, args.max_atoms, args.gpu_id, \
-        args.train_database1, args.train_database2, args.train_database3, \
-        args.test_database, args.sample, args.unit_list, args.use_bn, \
-        args.use_relu, args.use_GMP)
 
 if __name__ == "__main__":
     main()

@@ -11,7 +11,9 @@ data_idx_stanford = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/dataidx_st
 data_idx_two_sides = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/dataidx_twosides_new.csv'
 data_idx_decagon = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/dataidx_decagon.csv'
 data_idx_2013 = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/idx2013.csv'
-data_idx_drugbank = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/idxDrugBank.csv'
+data_idx_2013_2c = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/idx2013-01.csv'
+data_idx_drugbank_2c = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/idxDrugBank-01.csv'
+data_idx_drugbank_3c = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/idxDrugBank.csv'
 
 def DataSplit(dataX, dataY, ratio=0.90):
     random.seed(0)
@@ -47,21 +49,17 @@ def MetadataGenerate(database, sample):
     elif database == 'stanford':
         data_idx = csv.reader(open(data_idx_stanford, 'r'))
     elif database == '2013':
-        data_idx = csv.reader(open(data_idx_2013,'r'))
+        data_idx = csv.reader(open(data_idx_2013_2c,'r'))
     elif database == 'drugbank':
-        data_idx = csv.reader(open(data_idx_drugbank,'r'))
+        data_idx = csv.reader(open(data_idx_drugbank_2c,'r'))
     pos_data_idx = []
     neg_data_idx = []
     data_idx = [tuple(item) for item in data_idx]
 
     for item in data_idx:
-        # if item[2] != 'none':  #2013
-        if item[2] == 'increase' or item[2] == 'decrease':
+        if item[2] == '1':
             pos_data_idx.append(item)
-        elif item[2] == 'defalut':
-            continue
         else:
-            print('-----------neg:'+item[2])
             neg_data_idx.append(item)
 
     if sample == '1_1':
@@ -161,7 +159,7 @@ def FeatureExtract(data_idx, drug_feature, Max_atoms, israndom):
     drug_data1 = []
     drug_data2 = []
 
-    target = np.zeros(nb_instance, dtype='string')
+    target = np.zeros(nb_instance, dtype='float32') #TODO
     idx_num = 0
     number_of_ignore=0
 

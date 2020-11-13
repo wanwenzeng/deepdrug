@@ -38,13 +38,11 @@ class MyCallback(Callback):
         self.best_weight = None
         self.sample = sample
         self.patience = patience
-
     def on_train_begin(self, logs={}):
         self.wait = 0
         self.stopped_epoch = 0
         self.best = -np.Inf
         return
-
     def on_train_end(self, logs={}):
         self.model.set_weights(self.best_weight)
         self.model.save('./trained_models/deep_ddi_%s_%s.h5' % (self.sample, str(datetime.datetime.now())))
@@ -53,17 +51,14 @@ class MyCallback(Callback):
         if self.stopped_epoch > 0:
             print('Epoch %05d: early stopping' % (self.stopped_epoch + 1))
         return
-
     def on_epoch_begin(self, epoch, logs={}):
         return
-
     def on_epoch_end(self, epoch, logs={}):
         y_pred_val = self.model.predict(self.x_val)
         # the_test = self.model.predict(getSpecialX())
         # print("the test is ", the_test[0][0])
         # print("the real y is:       ", self.y_val)
         # print("the predicted y is:  ", y_pred_val)
-
         auc_score = roc_auc_score(self.y_val, y_pred_val)
         print('the auc score is : %s' % auc_score)
         if auc_score > self.best:
@@ -84,21 +79,26 @@ def ModelTraining(Max_atoms, doc, sample, lrModel, rfc, GCNModel, X_drug_feat_da
     optimizer = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
     GCNModel.compile(optimizer=optimizer, loss='mean_squared_error', metrics=['mse'])
     # EarlyStopping(monitor='val_loss',patience=5)
-    callbacks = [
-        ModelCheckpoint('./trained_models/deep_ddi_%s.h5' % sample, monitor='val_loss', save_best_only=False,
-                        save_weights_only=False),
-        MyCallback(sample, validation_data=validation_data, patience=10)]
+    callbacks = [ModelCheckpoint('./trained_models/deep_ddi_%s.h5' % sample, monitor='val_loss', save_best_only=False,save_weights_only=False),MyCallback(sample, validation_data=validation_data, patience=10)]
     size = X_drug_adj_data_train2.shape[0]
-    x = np.c_[X_drug_feat_data_train1.reshape(size, 75*Max_atoms), X_drug_adj_data_train1.reshape(size, Max_atoms*Max_atoms),
-              X_drug_feat_data_train2.reshape(size, 75*Max_atoms), X_drug_adj_data_train2.reshape(size, Max_atoms*Max_atoms)]
+    x = np.c_[X_drug_feat_data_train1.reshape(size, 75*Max_atoms), X_drug_adj_data_train1.reshape(size, Max_atoms*Max_atoms),X_drug_feat_data_train2.reshape(size, 75*Max_atoms), X_drug_adj_data_train2.reshape(size, Max_atoms*Max_atoms)]
+    print("*************this is x*****************")
+    # print(x)
     lr_time=time.time()
     lrModel.fit(x, Y_train)
     lr_time=time.time()-lr_time
     print('lr time:',lr_time)
 
     gcn_time=time.time()
-    GCNModel.fit(x=[X_drug_feat_data_train1, X_drug_adj_data_train1, X_drug_feat_data_train2, X_drug_adj_data_train2],
-                 y=Y_train, batch_size=64, epochs=nb_epoch, validation_split=0, callbacks=callbacks)
+    # print("****************this is drug fea1******************")
+    # print(X_drug_feat_data_train1.shape)
+    # print("****************this is drug adj1******************")
+    # print(X_drug_adj_data_train1)
+    # print("****************this is drug fea2******************")
+    # print(X_drug_feat_data_train2)
+    # print("****************this is drug adj2******************")
+    # print(X_drug_adj_data_train2)
+    GCNModel.fit(x=[X_drug_feat_data_train1, X_drug_adj_data_train1, X_drug_feat_data_train2, X_drug_adj_data_train2],y=Y_train, batch_size=64, epochs=nb_epoch, validation_split=0, callbacks=callbacks)
     gcn_time=time.time()-gcn_time
     print('gcn time:',gcn_time)
 
@@ -119,8 +119,7 @@ def ModelTraining(Max_atoms, doc, sample, lrModel, rfc, GCNModel, X_drug_feat_da
 def ModelEvaluate(result_save_path, Max_atoms, doc, lr, rfc, model, X_drug_feat_data_test1, X_drug_adj_data_test1, X_drug_feat_data_test2,
                   X_drug_adj_data_test2, Y_test):
     random.seed(0)
-    x_test = np.c_[X_drug_feat_data_test1.reshape(-1, 75*Max_atoms), X_drug_adj_data_test1.reshape(-1, Max_atoms*Max_atoms),
-                   X_drug_feat_data_test2.reshape(-1, 75*Max_atoms), X_drug_adj_data_test2.reshape(-1, Max_atoms*Max_atoms)]
+    x_test = np.c_[X_drug_feat_data_test1.reshape(-1, 75*Max_atoms), X_drug_adj_data_test1.reshape(-1, Max_atoms*Max_atoms),X_drug_feat_data_test2.reshape(-1, 75*Max_atoms), X_drug_adj_data_test2.reshape(-1, Max_atoms*Max_atoms)]
     y_pred_val = model.predict([X_drug_feat_data_test1, X_drug_adj_data_test1,
                                 X_drug_feat_data_test2, X_drug_adj_data_test2])
     y_pred_val_lr = lr.predict_proba(x_test)
@@ -219,8 +218,7 @@ def train(location, Max_atoms, gpu_id, database, sample, unit_list, use_bn, use_
     os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id
     print("Begin to load")
     print>>doc,'Begin to load'
-    data_path = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/preprocessed_data/'\
-         + database + '/' + sample + '/2c'
+    data_path = '/home/zengwanwen/caoxusheng/DeepDDI_desktop/data/preprocessed_data/'+ database + '/' + sample +'/2c'
 
     train_data = np.load('%s/train_data.npz' % (data_path))
     test_data = np.load('%s/test_data.npz' % (data_path))
@@ -247,28 +245,28 @@ def train(location, Max_atoms, gpu_id, database, sample, unit_list, use_bn, use_
     tmp2 = tmp1+Max_atoms*Max_atoms
     tmp3 = tmp2+75*Max_atoms
     tmp4 = tmp3+Max_atoms*Max_atoms
+    
+    
     X_drug_feat_data_train1 = X_train[:, :tmp1].reshape(-1, Max_atoms, 75)
-    X_drug_adj_data_train1 = X_train[:, tmp1:tmp2].reshape(-1, Max_atoms, Max_atoms)
+    X_drug_adj_data_train1 = np.zeros([X_drug_feat_data_train1.shape[0], Max_atoms, Max_atoms])
     X_drug_feat_data_train2 = X_train[:, tmp2:tmp3].reshape(-1, Max_atoms, 75)
-    X_drug_adj_data_train2 = X_train[:, tmp3:tmp4].reshape(-1, Max_atoms, Max_atoms)
+    X_drug_adj_data_train2 = np.zeros([X_drug_feat_data_train2.shape[0], Max_atoms, Max_atoms])
 
     X_drug_feat_data_test1 = X_test[:, :tmp1].reshape(-1, Max_atoms, 75)
-    X_drug_adj_data_test1 = X_test[:, tmp1:tmp2].reshape(-1, Max_atoms, Max_atoms)
+    X_drug_adj_data_test1 = np.zeros([X_drug_feat_data_test1.shape[0], Max_atoms, Max_atoms])
     X_drug_feat_data_test2 = X_test[:, tmp2:tmp3].reshape(-1, Max_atoms, 75)
-    X_drug_adj_data_test2 = X_test[:, tmp3:tmp4].reshape(-1, Max_atoms, Max_atoms)
+    X_drug_adj_data_test2 = np.zeros([X_drug_feat_data_test2.shape[0], Max_atoms, Max_atoms])
 
     X_drug_feat_data_val1 = X_val[:, :tmp1].reshape(-1, Max_atoms, 75)
-    X_drug_adj_data_val1 = X_val[:, tmp1:tmp2].reshape(-1, Max_atoms, Max_atoms)
+    X_drug_adj_data_val1 = np.zeros([X_drug_feat_data_val1.shape[0], Max_atoms, Max_atoms])
     X_drug_feat_data_val2 = X_val[:, tmp2:tmp3].reshape(-1, Max_atoms, 75)
-    X_drug_adj_data_val2 = X_val[:, tmp3:tmp4].reshape(-1, Max_atoms, Max_atoms)
+    X_drug_adj_data_val2 = np.zeros([X_drug_feat_data_val2.shape[0], Max_atoms, Max_atoms])
 
-    validation_data = [[X_drug_feat_data_val1, X_drug_adj_data_val1,
-                        X_drug_feat_data_val2, X_drug_adj_data_val2], y_val]
-    model = KerasMultiSourceGCNModel(False, False, False, False)\
-        .createMaster(X_drug_feat_data_test1[0].shape[-1], unit_list, use_relu, use_bn, use_GMP)
+    validation_data = [[X_drug_feat_data_val1, X_drug_adj_data_val1,X_drug_feat_data_val2, X_drug_adj_data_val2], y_val]
+    model = KerasMultiSourceGCNModel(False, False, False, False).createMaster(X_drug_feat_data_test1[0].shape[-1], unit_list, use_relu, use_bn, use_GMP)
 
     lr, rfc, model = ModelTraining(Max_atoms, doc, sample, lr, rfc, model, X_drug_feat_data_train1, X_drug_adj_data_train1, \
-        X_drug_feat_data_train2, X_drug_adj_data_train2, y_train, validation_data, nb_epoch=10)
+        X_drug_feat_data_train2, X_drug_adj_data_train2, y_train, validation_data, nb_epoch=100)
     ModelEvaluate(result_save_path, Max_atoms, doc, lr, rfc, model, X_drug_feat_data_test1, X_drug_adj_data_test1,
                 X_drug_feat_data_test2, X_drug_adj_data_test2, y_test)
     doc.close()

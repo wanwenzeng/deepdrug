@@ -541,7 +541,11 @@ class KerasMultiSourceGCNModel(object):
         drug_adj_input1 = Input(shape=(None, None), name='drug_adj_input1')
 
         # drug feature with GCN1
+        print(drug_feat_input1.shape)
+        print(drug_adj_input1.shape)
+       
         GCN_layer1 = GraphConv(units=units_list[0], step_num=1)([drug_feat_input1, drug_adj_input1])
+        
         if use_relu:
             GCN_layer1 = Activation('relu')(GCN_layer1)
         else:
@@ -613,7 +617,8 @@ class KerasMultiSourceGCNModel(object):
         x = Concatenate()([x_drug1, x_drug2])  # 100+100+100+100+100
 
         # x = BatchNormalization()(x)
-        output = Dense(3, activation='softmax', name='output')(x)
+        # output = Dense(3, activation='softmax', name='output')(x)  # multi-classification
+        output = Dense(1, activation='sigmoid', name='output')(x)
         
         # # combine
         # x = Dense(300, activation='tanh')(x)
