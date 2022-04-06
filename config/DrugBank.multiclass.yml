@@ -1,0 +1,12 @@
+dataset:  DrugBank
+task: multiclass 
+category: DDI
+entry1_file:  ./dataset/DrugBank_subset/drug/processed/data.pt
+entry2_file:  ./dataset/DrugBank_subset/drug/processed/data.pt
+entry1_seq_file:  ./dataset/DrugBank_subset/drug/drug.csv 
+entry2_seq_file:  ./dataset/DrugBank_subset/drug/drug.csv 
+pair_file:  ./dataset/DrugBank_subset/multiclass/entry_pairs.csv
+label_file: ./dataset/DrugBank_subset/multiclass/pair_labels.csv
+save_folder: ./output/DrugBank_subset/multiclass
+gpus: 0
+num_out_dim: 86

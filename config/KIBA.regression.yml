@@ -1,0 +1,18 @@
+dataset:  KIBA
+task: regression
+category: DTA
+# entry1_file:  /home/yinqijin/WorkSpace/20.deepdrug/org_data/giraffe/KIBA/drug_user_MolGraphConv/processed/data.pt 
+# entry2_file:  /home/yinqijin/WorkSpace/20.deepdrug/org_data/giraffe/KIBA/target.minor_oh_5_minmax_adjAngle/processed/data.pt 
+# pair_file:  /home/yinqijin/WorkSpace/20.deepdrug/org_data/giraffe/KIBA/regression.random_cv/entry_pairs.csv 
+# label_file: /home/yinqijin/WorkSpace/20.deepdrug/org_data/giraffe/KIBA/regression.random_cv/pair_labels.csv 
+# entry2_seq_file:  /home/yinqijin/WorkSpace/20.deepdrug/org_data/giraffe/KIBA/target/target.csv 
+# entry1_seq_file:  /home/yinqijin/WorkSpace/20.deepdrug/org_data/giraffe/KIBA/drug/drug.csv 
+entry1_file:  ./dataset/KIBA_subset/drug/processed/data.pt
+entry2_file:  ./dataset/KIBA_subset/target/processed/data.pt
+entry1_seq_file:  ./dataset/KIBA_subset/drug/drug.csv 
+entry2_seq_file:  ./dataset/KIBA_subset/target/target.csv 
+pair_file:  ./dataset/KIBA_subset/regression/entry_pairs.csv
+label_file: ./dataset/KIBA_subset/regression/pair_labels.csv
+save_folder: ./output/KIBA/regression
+gpus: 0
+num_out_dim: 1
