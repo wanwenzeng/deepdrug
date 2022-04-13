@@ -196,7 +196,6 @@ def get_rm2(ys_orig,ys_line):
 
 
 def evaluate_regression(y_true,y_pred):
-    # print('shape of y_true/pred',y_true.shape,y_pred.shape)
     metric_dict = {}
     metric_dict['y_true'] = y_true.reshape(-1)
     metric_dict['y_pred'] = y_pred.reshape(-1)

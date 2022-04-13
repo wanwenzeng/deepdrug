@@ -51,7 +51,6 @@ from torch_sparse import coalesce
 def graph_to_undirected(data):
 
     # num_nodes = maybe_num_nodes(edge_index, num_nodes)
-    # print('@@@@@',data)
     edge_index,edge_attr,num_nodes =data.edge_index,data.edge_attr,data.num_nodes
 
     row, col = edge_index
@@ -72,8 +71,6 @@ def graph_add_degree(data,degree='both'):
 
     deg1 = geo_degree(data.edge_index[0],data.num_nodes).reshape(-1,1)
     deg2 = geo_degree(data.edge_index[1],data.num_nodes).reshape(-1,1)
-    # print('shape....',deg1.shape,deg2.shape,data.x.shape)
-    # print('deg1 and deg2 are different?',((deg1-deg2)>0.0001).sum())
     data.x = t.cat([data.x,deg1,deg2],dim=1)
     return data 
 
@@ -106,11 +103,6 @@ class EntryDataset(InMemoryDataset):
         super(EntryDataset, self).__init__(root_folder, transform, pre_transform, pre_filter)
         self.inmemory = inmemory 
         self.filename = filename
-        # print('sadasdfa',dir(self))
-        # print('InMemoryDataset',InMemoryDataset)
-        # self.processed_paths  = [pathjoin(root_folder,'processed/data.pt'),]
-        # print('aasfas:',self.processed_paths)
-        # print('path:self.processed_paths[0]',self.processed_paths[0])
         if os.path.exists(self.processed_paths[0]):
             print('loading processed data...')
             tmp = t.load(self.processed_paths[0])
@@ -120,8 +112,6 @@ class EntryDataset(InMemoryDataset):
                 self.data, self.slices,self.entryIDs,self.unpIDs  = tmp
         else:
             print('file not exists in DeepDrug....')
-
-        # print('test1111',self.data)
         
     @property
     def processed_file_names(self,):
@@ -161,9 +151,9 @@ class EntryDataset(InMemoryDataset):
         self.__data_list__ = data_list
         self._data_list = data_list 
 
-    def drug_process_with_user_MolGraphConvFeaturizer(self,
-                                                drug_df,flag_add_self_loops=False,
-                                                default_dim_features=91,default_dim_nodes=50):
+    def drug_process(self,
+                    drug_df,flag_add_self_loops=False,
+                    default_dim_features=91,default_dim_nodes=50):
         import deepchem as dc 
         from rdkit import Chem 
         from tqdm import tqdm
@@ -172,7 +162,6 @@ class EntryDataset(InMemoryDataset):
         self.entryIDs = drug_df.drugID.values
         
         mols_list= list(map(Chem.MolFromSmiles, drug_df.SMILES))  # some SMILES maybe are failed to parse
-        #featurizer = dc.feat.graph_features.ConvMolFeaturizer()
         featurizer = user_MolGraphConvFeaturizer(use_edges=True,use_chirality=True,use_partial_charge=True)
         deepchem_list = featurizer.featurize(mols_list)
         
@@ -244,7 +233,6 @@ class EntryDataset(InMemoryDataset):
                 feat_mat = pdb_graph[key]
                 edge_mat = pdb_graph['adj']
                 if edge_thresh is not None: 
-                    
                     if True : 
                         #  2 features, adj_features + angle
                         assert adj_feature_flag == True 
@@ -336,7 +324,7 @@ def trans_seqs(x,seq_dict,max_seq_len=200,upper=True):
 from sklearn.preprocessing import OneHotEncoder
 # enc_protein = OneHotEncoder().fit(np.array(amino_char).reshape(-1, 1))
 # enc_drug = OneHotEncoder().fit(np.array(smiles_char).reshape(-1, 1))
-class SeqDataset(data.Dataset):#需要继承data.Dataset
+class SeqDataset(data.Dataset):
     def __init__(self,data_file,max_len=200,data_type='protein',onehot=False ):
         if data_type == 'protein':
             word_dict = seq_dict
@@ -356,7 +344,6 @@ class SeqDataset(data.Dataset):#需要继承data.Dataset
         self.entryIDs= self.df.index.values 
         self.num_samples = self.df.shape[0]
 
-        # print('f0123....')
         if onehot:
             self.encoder = OneHotEncoder(sparse=False).fit(np.arange(len(word_dict)).reshape(-1, 1))
             # self.entry_dict = {k:self.encoder.transform(np.reshape(v,(-1,1))).transpose() for k,v in self.entry_dict.items()} #[seq_len,num_embed,]-> [num_embed,seq_len] 
@@ -369,7 +356,6 @@ class SeqDataset(data.Dataset):#需要继承data.Dataset
         if self.onehot and (entryID not in self.entry_dict) :
             self.entry_dict[entryID] = self.encoder.transform(np.reshape(self.org_entry_dict[entryID],(-1,1))).transpose()
         data = self.entry_dict[entryID]
-        # print(data)
 
         if self.onehot:
             return t.Tensor(data).float()
@@ -377,7 +363,6 @@ class SeqDataset(data.Dataset):#需要继承data.Dataset
             return t.Tensor(data).long()
         
     def __len__(self):
-        # You should change 0 to the total size of your dataset.
         return self.num_samples
 
 class MultiEmbedDataset_v1(data.Dataset):
@@ -472,14 +457,9 @@ class DeepDrug_Dataset(LightningDataModule):
 
 
     def prepare_data(self):
-        # download, split, etc...
-        # only called on 1 GPU/TPU in distributed
-        
-        
         pass
 
     def my_prepare_data(self):
-        # loading 
         print('preparing dataset...')
         if os.path.isfile(self.entry1_data_folder ):
 
@@ -491,16 +471,13 @@ class DeepDrug_Dataset(LightningDataModule):
 
             if self.entry1_multi_embed  == True:
                 # first embeding: graph 
-                # seconde embedding: seq
+                # second embedding: sequence
                 print('using drug sequences file:',self.entry1_data_folder )
                 self.entry1_seq_dataset = SeqDataset(self.entry1_seq_file,data_type='drug',max_len=self.entry1_seq_len,onehot=True)
                 self.entry1_dataset = MultiEmbedDataset_v1(self.entry1_dataset,self.entry1_seq_dataset)
             elif self.entry1_multi_embed  == False: pass
             else: raise 
-        # print('entry1_dataset one sample:',self.entry1_dataset[0])
 
-
-        # print('entry2_data_folder:',self.entry2_data_folder)
         if self.entry2_data_folder is not  None:
             # print('entry2_data_folder is not None, use it.')
             if os.path.isfile(self.entry2_data_folder ):
@@ -518,7 +495,6 @@ class DeepDrug_Dataset(LightningDataModule):
 
         else:
             self.entry2_dataset = self.entry1_dataset
-        # print('entry2_dataset one sample:',self.entry2_dataset[0])
 
         self.pair_labels = pd.read_csv(self.pair_labels_file,header=0,index_col=None).values#.astype(self.y_type)
         self.entry_pairs = pd.read_csv(self.entry_pairs_file,header=0,index_col = None).values#.astype(str)

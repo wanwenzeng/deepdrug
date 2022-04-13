@@ -112,10 +112,6 @@ class DeepGCNLayerV2(torch.nn.Module):
                 h = self.act(h)
             if self.edge_norm is not None:
                 args[1] = self.edge_norm(args[1])
-                # need to uncomment
-                # if self.act is not None:
-                #     args[1]  = self.act(args[1] )
-                # args[1]  = F.dropout(args[1] , p=self.dropout, training=self.training)
             h = F.dropout(h, p=self.dropout, training=self.training)
             if self.conv is not None and self.ckpt_grad and h.requires_grad:
                 h,edge_attr = checkpoint(self.conv, h, *args, **kwargs)
@@ -539,7 +535,6 @@ class DeepDrug_Container(LightningModule):
         super().__init__()
 
         self.save_hyperparameters()
-        # self.save_hyperparameters()
         assert task_type in ['regression','binary_classification','binary',
                             'multi_classification','multilabel_classification','multiclass','multilabel',
                              ]
