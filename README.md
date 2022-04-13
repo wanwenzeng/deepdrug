@@ -1,8 +1,11 @@
 ![model](https://github.com/wanwenzeng/deepdrug/blob/main/model.png)
+
 <h3 align="center">
 <p> DeepDrug: A general graph-based deep learning framework  <br>for drug-drug interactions and drug-target interactions prediction<br></h3>
----
-DeepDrug is a deep learning framework, using residual graph convolutional networks (RGCNs) and convolutional networks (CNNs) to learn the comprehensive structural and sequential representations of drugs and proteins in order to boost the drug-drug interactions(DDIs) and drug-target interactions(DTIs) prediction accuracy. 
+
+---  
+
+DeepDrug is a deep learning framework, using residual graph convolutional networks (RGCNs) and convolutional networks (CNNs) to learn the comprehensive structural and sequential representations of drugs and proteins in order to boost the drug-drug interactions(DDIs) and drug-target interactions(DTIs) prediction accuracy.
 
 ## Installation
 
@@ -22,16 +25,16 @@ parameters in the config file:
 > entry1_file/entry2_file: a file contain processed drug/protein graph features  
 > entry1_seq_file/entry2_seq_file:  a csv format file contains drug/protein sequence features  
 > pair_file: a file contains all sample (drug-drug or drug-protein) pairs  
-> label_file: a file contains labels corresponding to pair_file, which can be one-column integer (for binary classification task), multi-columns  integers (for multi-class/label classification task) and one-column float numbers (for regression task).  
+> label_file: a file contains labels corresponding to pair_file, which can be one-column integer (for binary classification task), multi-columns    integers (for multi-class/label classification task) and one-column float numbers (for regression task).  
 > save_folder: a directory to save the outputs  
 > gpus: the gpu device ID to use.  
 > num_out_dim: 1 for binary classification and regression task, specific output dimension for multi-class/label classification task, such as 1317 for multi-label classification task for TwoSides dataset.  
 
+## Data Processing
 
-## Data Processing 
+For drugs, the structural features can be easily constructed by
 
-For drugs, the structural features can be easily constructed by 
-```python 
+```python
 from dataset import EntryDataset
 drug_df = pd.read_csv('drug.csv') 
 save_folder = '/path/to/drug/graph/'
@@ -41,6 +44,7 @@ dataset.drug_process(drug_df)
 ```
 
 For proteins, the structural features are constructed by [PAIRPred](https://onlinelibrary.wiley.com/doi/10.1002/prot.24479) software (processed feature data will be released soon).
+
 ```python
 from dataset import EntryDataset
 target_df = pd.read_csv('target.csv') 
@@ -52,7 +56,9 @@ dataset.protein_process(target_df,target_graph_dict)
 ```
 
 ## Cite Us
+
 If you found this package useful, please cite [our paper](https://www.biorxiv.org/content/10.1101/2020.11.09.375626v2):
+
 ```
 @article{DeepDrug,
   title={DeepDrug: A general graph-based deep learning framework for drug-drug interactions and drug-target interactions prediction},
