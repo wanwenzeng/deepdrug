@@ -32,6 +32,8 @@ parameters in the config file:
 
 ## Data Processing
 
+Processed datasets are avilable in [figshare](https://figshare.com/articles/dataset/Datasets_fo_DeepDrug/20306445).
+
 For drugs, the structural features can be easily constructed by
 
 ```python
@@ -43,7 +45,7 @@ dataset.drug_process(drug_df)
 # graph features will be processed and saved in the /path/to/drug/graph/processed/data.pt 
 ```
 
-For proteins, the structural features are constructed by [PAIRPred](https://onlinelibrary.wiley.com/doi/10.1002/prot.24479) software (processed feature data will be released soon).
+For proteins, the structural features are constructed by [PAIRPred](https://onlinelibrary.wiley.com/doi/10.1002/prot.24479) software.
 
 ```python
 from dataset import EntryDataset
