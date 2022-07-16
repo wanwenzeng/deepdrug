@@ -1,4 +1,4 @@
-![model](https://github.com/wanwenzeng/deepdrug/blob/main/model.png)
+![model](https://github.com/wanwenzeng/deepdrug/blob/main/fig1.png)
 
 <h3 align="center">
 <p> DeepDrug: A general graph-based deep learning framework  <br>for drug-drug interactions and drug-target interactions prediction<br></h3>
