@@ -47,16 +47,6 @@ dataset.drug_process(drug_df)
 
 For proteins, the structural features are constructed by [PAIRPred](https://onlinelibrary.wiley.com/doi/10.1002/prot.24479) software.
 
-```python
-from dataset import EntryDataset
-target_df = pd.read_csv('target.csv') 
-target_graph_dict = np.load('PAIRPred_feature_dict.npz')[()]
-save_folder = '/path/to/target/graph/'
-dataset = EntryDataset(save_folder)
-dataset.protein_process(target_df,target_graph_dict)
-# graph features will be processed and saved in the /path/to/target/graph/processed/data.pt 
-```
-
 ## Cite Us
 
 If you found this package useful, please cite [our paper](https://www.biorxiv.org/content/10.1101/2020.11.09.375626v2):
