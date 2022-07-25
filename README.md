@@ -10,8 +10,8 @@ DeepDrug is a deep learning framework, using residual graph convolutional networ
 ## Installation
 
 * pytorch==1.8.1
-* pytorch-geometric==1.7.1
-* pytorch-lightning==1.3.6
+* pytorch-geometric==1.7.1  
+* pytorch-lightning==1.3.6  
 Note: since pytorch-geometric v2.0.0 has modified many underlying interfaces to be compatible with heterogeneous graph, pytorch-geometric with a version < v2.0.0 is recommended.
 
 ## Usage
